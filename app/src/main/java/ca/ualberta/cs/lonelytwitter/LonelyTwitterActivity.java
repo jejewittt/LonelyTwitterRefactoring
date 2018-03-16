@@ -1,6 +1,5 @@
 package ca.ualberta.cs.lonelytwitter;
 
-import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -11,13 +10,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import ca.ualberta.cs.lonelytweet.ImportantLonelyTweet;
+import ca.ualberta.cs.lonelytweet.LonleyTweet;
+import ca.ualberta.cs.lonelytweet.NormalLonelyTweet;
+
 public class LonelyTwitterActivity extends Activity {
 
 	private EditText bodyText;
 	private ListView oldTweetsList;
 
-	private List<NormalLonelyTweet> tweets;
-	private ArrayAdapter<NormalLonelyTweet> adapter;
+	private List<LonleyTweet> tweets;
+	private ArrayAdapter<LonleyTweet> adapter;
 	private TweetsFileManager tweetsProvider;
 
 	@Override
@@ -35,7 +38,7 @@ public class LonelyTwitterActivity extends Activity {
 
 		tweetsProvider = new TweetsFileManager(this);
 		tweets = tweetsProvider.loadTweets();
-		adapter = new ArrayAdapter<NormalLonelyTweet>(this, R.layout.list_item,
+		adapter = new ArrayAdapter<LonleyTweet>(this, R.layout.list_item,
 				tweets);
 		oldTweetsList.setAdapter(adapter);
 	}
@@ -43,10 +46,12 @@ public class LonelyTwitterActivity extends Activity {
 	public void save(View v) {
 		String text = bodyText.getText().toString();
 
-		NormalLonelyTweet tweet;
-
-		tweet = new NormalLonelyTweet(text, new Date());
-
+		LonleyTweet tweet;
+		if(text.contains("*")){
+				tweet = new ImportantLonelyTweet(text);
+		}else {
+			tweet = new NormalLonelyTweet(text);
+		}
 		//TODO: use different sub-classes (Normal or Important) based on usage of "*" in the text.
 		
 		if (tweet.isValid()) {
@@ -66,4 +71,11 @@ public class LonelyTwitterActivity extends Activity {
 		tweetsProvider.saveTweets(tweets);
 	}
 
+	public List<LonleyTweet> getTweets() {
+		return tweets;
+	}
+
+	public void setTweets(List<LonleyTweet> tweets) {
+		this.tweets = tweets;
+	}
 }
